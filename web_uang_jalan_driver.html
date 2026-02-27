@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Data Uang Jalan Driver</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f5f6fa; padding:20px; }
+    h1 { margin-bottom:10px; }
+    form, table { background:#fff; padding:15px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,.1); }
+    form { margin-bottom:20px; }
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+    label { display:block; font-size:13px }
+    input { width:100%; padding:8px; margin-top:4px; }
+    button { margin-top:15px; padding:10px 15px; border:none; border-radius:6px; background:#4f46e5; color:white; cursor:pointer; }
+    table { width:100%; border-collapse:collapse; font-size:12px }
+    th, td { padding:6px; border-bottom:1px solid #ddd; text-align:center; }
+    th { background:#f0f0f0; }
+    .total { margin-top:15px; font-weight:bold; }
+  </style>
+</head>
+<body>
+
+<h1>Data Uang Jalan</h1>
+
+<form id="formData">
+  <div class="grid">
+    <label>Tanggal
+      <input type="date" id="tanggal" required />
+    </label>
+
+    <label>No Polisi
+      <input type="text" id="nopol" placeholder="B 1234 XX" required />
+    </label>
+
+    <label>Jarak (KM)
+      <input type="number" id="jarak" required />
+    </label>
+
+    <label>Tonase (Ton)
+      <input type="number" step="0.01" id="tonase" required />
+    </label>
+
+    <label>Solar (Rp)
+      <input type="number" id="solar" value="0" />
+    </label>
+
+    <label>Tol (Rp)
+      <input type="number" id="tol" value="0" />
+    </label>
+
+    <label>Upah Driver 1 (Rp)
+      <input type="number" id="upah1" value="0" />
+    </label>
+
+    <label>Upah Driver 2 (Rp)
+      <input type="number" id="upah2" value="0" />
+    </label>
+
+    <label>Asam (Rp)
+      <input type="number" id="asam" value="0" />
+    </label>
+
+    <label>Total (otomatis)
+      <input type="number" id="total" readonly />
+    </label>
+
+  </div>
+
+  <button type="submit">Simpan</button>
+</form>
+
+<table>
+  <thead>
+    <tr>
+      <th>No</th>
+      <th>Tanggal</th>
+      <th>Nopol</th>
+      <th>Jarak</th>
+      <th>Tonase</th>
+      <th>Solar</th>
+      <th>Tol</th>
+      <th>Upah D1</th>
+      <th>Upah D2</th>
+      <th>Asam</th>
+      <th>Total</th>
+      <th>Aksi</th>
+    </tr>
+  </thead>
+  <tbody id="tbody"></tbody>
+</table>
+
+<div class="total" id="grandTotal">Grand Total: Rp 0</div>
+
+<script>
+let data = JSON.parse(localStorage.getItem('uang_jalan_driver_v4')) || [];
+
+const tbody = document.getElementById('tbody');
+const grandTotalEl = document.getElementById('grandTotal');
+
+const solarEl = document.getElementById('solar');
+const tolEl   = document.getElementById('tol');
+const upah1El = document.getElementById('upah1');
+const upah2El = document.getElementById('upah2');
+const asamEl  = document.getElementById('asam');
+const totalEl = document.getElementById('total');
+
+function hitungTotalForm(){
+  const total =
+    Number(solarEl.value||0)+
+    Number(tolEl.value||0)+
+    Number(upah1El.value||0)+
+    Number(upah2El.value||0)+
+    Number(asamEl.value||0);
+  totalEl.value = total;
+}
+
+[solarEl,tolEl,upah1El,upah2El,asamEl].forEach(el=>{
+  el.addEventListener('input', hitungTotalForm);
+});
+
+function render() {
+  tbody.innerHTML = '';
+  let grand = 0;
+
+  data.forEach((item, index) => {
+    grand += Number(item.total);
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${index + 1}</td>
+      <td>${item.tanggal}</td>
+      <td>${item.nopol}</td>
+      <td>${item.jarak}</td>
+      <td>${item.tonase}</td>
+      <td>Rp ${Number(item.solar).toLocaleString('id-ID')}</td>
+      <td>Rp ${Number(item.tol).toLocaleString('id-ID')}</td>
+      <td>Rp ${Number(item.upah1).toLocaleString('id-ID')}</td>
+      <td>Rp ${Number(item.upah2).toLocaleString('id-ID')}</td>
+      <td>Rp ${Number(item.asam).toLocaleString('id-ID')}</td>
+      <td>Rp ${Number(item.total).toLocaleString('id-ID')}</td>
+      <td><button onclick="hapus(${index})">Hapus</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  grandTotalEl.innerText = 'Grand Total: Rp ' + grand.toLocaleString('id-ID');
+}
+
+function simpan() {
+  localStorage.setItem('uang_jalan_driver_v4', JSON.stringify(data));
+}
+
+function hapus(index) {
+  if (confirm('Hapus data ini?')) {
+    data.splice(index, 1);
+    simpan();
+    render();
+  }
+}
+
+const form = document.getElementById('formData');
+form.addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  hitungTotalForm();
+
+  const item = {
+    tanggal: document.getElementById('tanggal').value,
+    nopol: document.getElementById('nopol').value,
+    jarak: document.getElementById('jarak').value,
+    tonase: document.getElementById('tonase').value,
+    solar: solarEl.value || 0,
+    tol: tolEl.value || 0,
+    upah1: upah1El.value || 0,
+    upah2: upah2El.value || 0,
+    asam: asamEl.value || 0,
+    total: totalEl.value || 0
+  };
+
+  data.push(item);
+  simpan();
+  render();
+  form.reset();
+  totalEl.value = '';
+});
+
+render();
+</script>
+
+</body>
+</html>
