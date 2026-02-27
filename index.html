@@ -2,68 +2,78 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <title>Data Uang Jalan Driver</title>
+  <title>Uang Jalan Driver</title>
   <style>
-    body { font-family: Arial, sans-serif; background:#f5f6fa; padding:20px; }
-    h1 { margin-bottom:10px; }
-    form, table { background:#fff; padding:15px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,.1); }
-    form { margin-bottom:20px; }
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
-    label { display:block; font-size:13px }
-    input { width:100%; padding:8px; margin-top:4px; }
-    button { margin-top:15px; padding:10px 15px; border:none; border-radius:6px; background:#4f46e5; color:white; cursor:pointer; }
-    table { width:100%; border-collapse:collapse; font-size:12px }
-    th, td { padding:6px; border-bottom:1px solid #ddd; text-align:center; }
-    th { background:#f0f0f0; }
-    .total { margin-top:15px; font-weight:bold; }
+    body{font-family:Arial,Helvetica,sans-serif;background:#f4f6f9;padding:20px}
+    h2{margin-bottom:10px}
+    form,table{background:#fff;padding:15px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.1)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+    label{font-size:12px}
+    input{width:100%;padding:8px;margin-top:4px}
+    button{padding:8px 12px;border:none;border-radius:5px;background:#2563eb;color:#fff;cursor:pointer}
+    table{width:100%;border-collapse:collapse;font-size:12px;margin-top:15px}
+    th,td{border-bottom:1px solid #ddd;padding:6px;text-align:center}
+    th{background:#f0f0f0}
+    .totalbox{margin-top:10px;font-weight:bold}
   </style>
 </head>
 <body>
 
-<h1>Data Uang Jalan</h1>
+<h2>Data Uang Jalan Driver</h2>
 
 <form id="formData">
   <div class="grid">
     <label>Tanggal
-      <input type="date" id="tanggal" required />
+      <input type="date" id="tanggal" required>
+    </label>
+
+    <label>Nama Trip / Customer
+      <input type="text" id="nama_trip_customer" required>
+    </label>
+
+    <label>Kota Asal
+      <input type="text" id="kota_asal" required>
+    </label>
+
+    <label>Tujuan Bongkar
+      <input type="text" id="tujuan_bongkar" required>
     </label>
 
     <label>No Polisi
-      <input type="text" id="nopol" placeholder="B 1234 XX" required />
+      <input type="text" id="nopol" required>
     </label>
 
-    <label>Jarak (KM)
-      <input type="number" id="jarak" required />
+    <label>Jarak (km)
+      <input type="number" id="jarak" required>
     </label>
 
-    <label>Tonase (Ton)
-      <input type="number" step="0.01" id="tonase" required />
+    <label>Tonase
+      <input type="number" step="0.01" id="tonase" required>
     </label>
 
-    <label>Solar (Rp)
-      <input type="number" id="solar" value="0" />
+    <label>Solar
+      <input type="number" id="solar" value="0">
     </label>
 
-    <label>Tol (Rp)
-      <input type="number" id="tol" value="0" />
+    <label>Tol
+      <input type="number" id="tol" value="0">
     </label>
 
-    <label>Upah Driver 1 (Rp)
-      <input type="number" id="upah1" value="0" />
+    <label>Upah Driver 1
+      <input type="number" id="upah1" value="0">
     </label>
 
-    <label>Upah Driver 2 (Rp)
-      <input type="number" id="upah2" value="0" />
+    <label>Upah Driver 2
+      <input type="number" id="upah2" value="0">
     </label>
 
-    <label>Asam (Rp)
-      <input type="number" id="asam" value="0" />
+    <label>Asam
+      <input type="number" id="asam" value="0">
     </label>
 
     <label>Total (otomatis)
-      <input type="number" id="total" readonly />
+      <input type="number" id="total" readonly>
     </label>
-
   </div>
 
   <button type="submit">Simpan</button>
@@ -74,28 +84,35 @@
     <tr>
       <th>No</th>
       <th>Tanggal</th>
+      <th>Trip</th>
+      <th>Asal</th>
+      <th>Tujuan</th>
       <th>Nopol</th>
       <th>Jarak</th>
       <th>Tonase</th>
       <th>Solar</th>
       <th>Tol</th>
-      <th>Upah D1</th>
-      <th>Upah D2</th>
+      <th>D1</th>
+      <th>D2</th>
       <th>Asam</th>
       <th>Total</th>
-      <th>Aksi</th>
     </tr>
   </thead>
   <tbody id="tbody"></tbody>
 </table>
 
-<div class="total" id="grandTotal">Grand Total: Rp 0</div>
+<div class="totalbox" id="grandTotal">Grand Total : 0</div>
 
 <script>
-let data = JSON.parse(localStorage.getItem('uang_jalan_driver_v4')) || [];
+const SUPABASE_URL = "https://jlhfzgxddlmyfdlwjlzs.supabase.co";
+const SUPABASE_KEY = "sb_publishable_zc8JApZLnG1D1M2xpDP7tA_H7RnxZ_T";
+const TABLE = "uang_jalan_driver";
 
-const tbody = document.getElementById('tbody');
-const grandTotalEl = document.getElementById('grandTotal');
+const headers = {
+  "apikey": SUPABASE_KEY,
+  "Authorization": "Bearer " + SUPABASE_KEY,
+  "Content-Type": "application/json"
+};
 
 const solarEl = document.getElementById('solar');
 const tolEl   = document.getElementById('tol');
@@ -104,7 +121,7 @@ const upah2El = document.getElementById('upah2');
 const asamEl  = document.getElementById('asam');
 const totalEl = document.getElementById('total');
 
-function hitungTotalForm(){
+function hitungTotal(){
   const total =
     Number(solarEl.value||0)+
     Number(tolEl.value||0)+
@@ -114,77 +131,88 @@ function hitungTotalForm(){
   totalEl.value = total;
 }
 
-[solarEl,tolEl,upah1El,upah2El,asamEl].forEach(el=>{
-  el.addEventListener('input', hitungTotalForm);
-});
+[solarEl,tolEl,upah1El,upah2El,asamEl].forEach(e=>e.addEventListener('input',hitungTotal));
 
-function render() {
-  tbody.innerHTML = '';
+async function loadData(){
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=*&order=id.desc`,{
+    headers
+  });
+  const data = await res.json();
+  render(data);
+}
+
+function render(data){
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = "";
   let grand = 0;
 
-  data.forEach((item, index) => {
-    grand += Number(item.total);
+  data.forEach((d,i)=>{
+    grand += Number(d.total||0);
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>${index + 1}</td>
-      <td>${item.tanggal}</td>
-      <td>${item.nopol}</td>
-      <td>${item.jarak}</td>
-      <td>${item.tonase}</td>
-      <td>Rp ${Number(item.solar).toLocaleString('id-ID')}</td>
-      <td>Rp ${Number(item.tol).toLocaleString('id-ID')}</td>
-      <td>Rp ${Number(item.upah1).toLocaleString('id-ID')}</td>
-      <td>Rp ${Number(item.upah2).toLocaleString('id-ID')}</td>
-      <td>Rp ${Number(item.asam).toLocaleString('id-ID')}</td>
-      <td>Rp ${Number(item.total).toLocaleString('id-ID')}</td>
-      <td><button onclick="hapus(${index})">Hapus</button></td>
+      <td>${i+1}</td>
+      <td>${d.tanggal||""}</td>
+      <td>${d.nama_trip_customer||""}</td>
+      <td>${d.kota_asal||""}</td>
+      <td>${d.tujuan_bongkar||""}</td>
+      <td>${d.nopol||""}</td>
+      <td>${d.jarak||0}</td>
+      <td>${d.tonase||0}</td>
+      <td>${Number(d.solar||0).toLocaleString('id-ID')}</td>
+      <td>${Number(d.tol||0).toLocaleString('id-ID')}</td>
+      <td>${Number(d.upah1||0).toLocaleString('id-ID')}</td>
+      <td>${Number(d.upah2||0).toLocaleString('id-ID')}</td>
+      <td>${Number(d.asam||0).toLocaleString('id-ID')}</td>
+      <td>${Number(d.total||0).toLocaleString('id-ID')}</td>
     `;
     tbody.appendChild(tr);
   });
 
-  grandTotalEl.innerText = 'Grand Total: Rp ' + grand.toLocaleString('id-ID');
-}
-
-function simpan() {
-  localStorage.setItem('uang_jalan_driver_v4', JSON.stringify(data));
-}
-
-function hapus(index) {
-  if (confirm('Hapus data ini?')) {
-    data.splice(index, 1);
-    simpan();
-    render();
-  }
+  document.getElementById('grandTotal').innerText = "Grand Total : " + grand.toLocaleString('id-ID');
 }
 
 const form = document.getElementById('formData');
-form.addEventListener('submit', function(e) {
+
+form.addEventListener('submit', async (e)=>{
   e.preventDefault();
 
-  hitungTotalForm();
+  hitungTotal();
 
-  const item = {
+  const payload = {
     tanggal: document.getElementById('tanggal').value,
+    nama_trip_customer: document.getElementById('nama_trip_customer').value,
+    kota_asal: document.getElementById('kota_asal').value,
+    tujuan_bongkar: document.getElementById('tujuan_bongkar').value,
     nopol: document.getElementById('nopol').value,
-    jarak: document.getElementById('jarak').value,
-    tonase: document.getElementById('tonase').value,
-    solar: solarEl.value || 0,
-    tol: tolEl.value || 0,
-    upah1: upah1El.value || 0,
-    upah2: upah2El.value || 0,
-    asam: asamEl.value || 0,
-    total: totalEl.value || 0
+    jarak: Number(document.getElementById('jarak').value),
+    tonase: Number(document.getElementById('tonase').value),
+    solar: Number(solarEl.value||0),
+    tol: Number(tolEl.value||0),
+    upah1: Number(upah1El.value||0),
+    upah2: Number(upah2El.value||0),
+    asam: Number(asamEl.value||0),
+    total: Number(totalEl.value||0)
   };
 
-  data.push(item);
-  simpan();
-  render();
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`,{
+    method:"POST",
+    headers,
+    body: JSON.stringify(payload)
+  });
+
+  if(!res.ok){
+    const t = await res.text();
+    alert("Gagal simpan: " + t);
+    return;
+  }
+
   form.reset();
-  totalEl.value = '';
+  totalEl.value = "";
+  loadData();
 });
 
-render();
+loadData();
 </script>
 
 </body>
