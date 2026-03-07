@@ -1,1 +1,148 @@
 
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dashboard Uang Jalan</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+font-family: Arial;
+background:#f4f6f9;
+padding:20px;
+}
+
+h1{
+text-align:center;
+}
+
+.container{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:15px;
+margin-bottom:30px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 2px 5px rgba(0,0,0,0.1);
+text-align:center;
+}
+
+.card h2{
+margin:0;
+font-size:18px;
+color:#555;
+}
+
+.card p{
+font-size:22px;
+font-weight:bold;
+margin-top:10px;
+}
+
+.chart-box{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Dashboard Uang Jalan Driver</h1>
+
+<div class="container">
+
+<div class="card">
+<h2>Total Trip</h2>
+<p id="trip">0</p>
+</div>
+
+<div class="card">
+<h2>Total Solar</h2>
+<p id="solar">0</p>
+</div>
+
+<div class="card">
+<h2>Total Tol</h2>
+<p id="tol">0</p>
+</div>
+
+<div class="card">
+<h2>Total Pengeluaran</h2>
+<p id="total">0</p>
+</div>
+
+</div>
+
+<div class="chart-box">
+<canvas id="chart"></canvas>
+</div>
+
+<script>
+
+const supabase = supabase.createClient(
+"https://PROJECT_URL.supabase.co",
+"PUBLIC_ANON_KEY"
+)
+
+async function loadDashboard(){
+
+const {data,error} = await supabase
+.from("uang_jalan_driver")
+.select("*")
+
+let trip = data.length
+let solar = 0
+let tol = 0
+let total = 0
+
+let tanggal = []
+let totalHarian = []
+
+data.forEach(r=>{
+
+solar += Number(r.solar || 0)
+tol += Number(r.tol || 0)
+total += Number(r.total || 0)
+
+tanggal.push(r.tanggal)
+totalHarian.push(r.total)
+
+})
+
+document.getElementById("trip").innerText = trip
+document.getElementById("solar").innerText = solar.toLocaleString()
+document.getElementById("tol").innerText = tol.toLocaleString()
+document.getElementById("total").innerText = total.toLocaleString()
+
+const ctx = document.getElementById("chart")
+
+new Chart(ctx,{
+type:"bar",
+data:{
+labels:tanggal,
+datasets:[{
+label:"Pengeluaran",
+data:totalHarian
+}]
+}
+})
+
+}
+
+loadDashboard()
+
+</script>
+
+</body>
+</html>
