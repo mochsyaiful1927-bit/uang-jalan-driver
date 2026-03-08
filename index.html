@@ -1,245 +1,323 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <title>Uang Jalan Driver</title>
-  <style>
-    body{font-family:Arial,Helvetica,sans-serif;background:#f4f6f9;padding:20px}
-    h2{margin-bottom:10px}
-    form,table{background:#fff;padding:15px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.1)}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
-    label{font-size:12px}
-    input{width:100%;padding:8px;margin-top:4px}
-    button{padding:8px 12px;border:none;border-radius:5px;background:#2563eb;color:#fff;cursor:pointer}
-    table{width:100%;border-collapse:collapse;font-size:12px;margin-top:15px}
-    th,td{border-bottom:1px solid #ddd;padding:6px;text-align:center}
-    th{background:#f0f0f0}
-    .totalbox{margin-top:10px;font-weight:bold}
-  </style>
+<meta charset="UTF-8" />
+<title>Uang Jalan Driver</title>
+
+<style>
+body{font-family:Arial,Helvetica,sans-serif;background:#f4f6f9;padding:20px}
+h2{margin-bottom:10px}
+form,table{background:#fff;padding:15px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.1)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+label{font-size:12px}
+input{width:100%;padding:8px;margin-top:4px}
+button{padding:8px 12px;border:none;border-radius:5px;background:#2563eb;color:#fff;cursor:pointer}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-top:15px}
+th,td{border-bottom:1px solid #ddd;padding:6px;text-align:center}
+th{background:#f0f0f0}
+.totalbox{margin-top:10px;font-weight:bold}
+</style>
+
 </head>
 <body>
 
 <h2>Data Uang Jalan Driver</h2>
 
 <form id="formData">
-  <div class="grid">
-    <label>Tanggal
-      <input type="date" id="tanggal" required>
-    </label>
+<div class="grid">
 
-    <label>Nama Trip / Customer
-      <input type="text" id="nama_trip_customer" required>
-    </label>
+<label>Tanggal
+<input type="date" id="tanggal" required>
+</label>
 
-    <label>Kota Asal
-      <input type="text" id="kota_asal" required>
-    </label>
+<label>Nama Trip / Customer
+<input type="text" id="nama_trip_customer" required>
+</label>
 
-    <label>Tujuan Bongkar
-      <input type="text" id="tujuan_bongkar" required>
-    </label>
+<label>Kota Asal
+<input type="text" id="kota_asal" required>
+</label>
 
-    <label>No Polisi
-      <input type="text" id="nopol" required>
-    </label>
+<label>Tujuan Bongkar
+<input type="text" id="tujuan_bongkar" required>
+</label>
 
-    <label>Jarak (km)
-      <input type="number" id="jarak" required>
-    </label>
+<label>No Polisi
+<input type="text" id="nopol" required>
+</label>
 
-    <label>Tonase
-      <input type="number" step="0.01" id="tonase" required>
-    </label>
+<label>Jarak (km)
+<input type="number" id="jarak" required>
+</label>
 
-    <label>Solar
-      <input type="number" id="solar" value="0">
-    </label>
+<label>Tonase
+<input type="number" step="0.01" id="tonase" required>
+</label>
 
-    <label>Tol
-      <input type="number" id="tol" value="0">
-    </label>
+<label>Solar
+<input type="number" id="solar" value="0">
+</label>
 
-    <label>Upah Driver 1
-      <input type="number" id="upah1" value="0">
-    </label>
+<label>Tol
+<input type="number" id="tol" value="0">
+</label>
 
-    <label>Upah Driver 2
-      <input type="number" id="upah2" value="0">
-    </label>
+<label>Upah Driver 1
+<input type="number" id="upah1" value="0">
+</label>
 
-    <label>Asam
-      <input type="number" id="asam" value="0">
-    </label>
+<label>Upah Driver 2
+<input type="number" id="upah2" value="0">
+</label>
 
-    <label>Total (otomatis)
-      <input type="number" id="total" readonly>
-    </label>
-  </div>
+<label>Asam
+<input type="number" id="asam" value="0">
+</label>
 
-  <button type="submit">Simpan</button>
+<label>Total (otomatis)
+<input type="number" id="total" readonly>
+</label>
+
+</div>
+
+<button type="submit">Simpan</button>
+
 </form>
 
 <table>
-  <thead>
-    <tr>
-      <th>No</th>
-      <th>Tanggal</th>
-      <th>Trip</th>
-      <th>Asal</th>
-      <th>Tujuan</th>
-      <th>Nopol</th>
-      <th>Jarak</th>
-      <th>Tonase</th>
-      <th>Solar</th>
-      <th>Tol</th>
-      <th>D1</th>
-      <th>D2</th>
-      <th>Asam</th>
-      <th>Total</th>
-      <th>Aksi</th>
-    </tr>
-  </thead>
-  <tbody id="tbody"></tbody>
+
+<thead>
+<tr>
+<th>No</th>
+<th>Tanggal</th>
+<th>Trip</th>
+<th>Asal</th>
+<th>Tujuan</th>
+<th>Nopol</th>
+<th>Jarak</th>
+<th>Tonase</th>
+<th>Solar</th>
+<th>Tol</th>
+<th>D1</th>
+<th>D2</th>
+<th>Asam</th>
+<th>Total</th>
+<th>Aksi</th>
+</tr>
+</thead>
+
+<tbody id="tbody"></tbody>
+
 </table>
 
 <div class="totalbox" id="grandTotal">Grand Total : 0</div>
 
 <script>
-const SUPABASE_URL = "https://jlhfzgxddlmyfdlwjlzs.supabase.co";
-const SUPABASE_KEY = "sb_publishable_zc8JApZLnG1D1M2xpDP7tA_H7RnxZ_T";
-const TABLE = "uang_jalan_driver";
 
-const headers = {
-  "apikey": SUPABASE_KEY,
-  "Authorization": "Bearer " + SUPABASE_KEY,
-  "Content-Type": "application/json"
+const SUPABASE_URL="https://jlhfzgxddlmyfdlwjlzs.supabase.co";
+const SUPABASE_KEY="sb_publishable_zc8JApZLnG1D1M2xpDP7tA_H7RnxZ_T";
+const TABLE="uang_jalan_driver";
+
+let editId=null;
+let dataGlobal=[];
+
+const headers={
+apikey:SUPABASE_KEY,
+Authorization:"Bearer "+SUPABASE_KEY,
+"Content-Type":"application/json"
 };
 
-const solarEl = document.getElementById('solar');
-const tolEl   = document.getElementById('tol');
-const upah1El = document.getElementById('upah1');
-const upah2El = document.getElementById('upah2');
-const asamEl  = document.getElementById('asam');
-const totalEl = document.getElementById('total');
+const solarEl=document.getElementById('solar');
+const tolEl=document.getElementById('tol');
+const upah1El=document.getElementById('upah1');
+const upah2El=document.getElementById('upah2');
+const asamEl=document.getElementById('asam');
+const totalEl=document.getElementById('total');
 
 function hitungTotal(){
-  const total =
-    Number(solarEl.value||0)+
-    Number(tolEl.value||0)+
-    Number(upah1El.value||0)+
-    Number(upah2El.value||0)+
-    Number(asamEl.value||0);
-  totalEl.value = total;
+
+const total=
+Number(solarEl.value||0)+
+Number(tolEl.value||0)+
+Number(upah1El.value||0)+
+Number(upah2El.value||0)+
+Number(asamEl.value||0);
+
+totalEl.value=total;
+
 }
 
 [solarEl,tolEl,upah1El,upah2El,asamEl].forEach(e=>e.addEventListener('input',hitungTotal));
 
 async function loadData(){
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=*&order=id.desc`,{
-    headers
-  });
-  const data = await res.json();
-  render(data);
+
+const res=await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=*&order=id.desc`,{headers});
+
+const data=await res.json();
+
+dataGlobal=data;
+
+render(data);
+
 }
 
 function render(data){
-  const tbody = document.getElementById('tbody');
-  tbody.innerHTML = "";
-  let grand = 0;
 
-  data.forEach((d,i)=>{
-    grand += Number(d.total||0);
+const tbody=document.getElementById('tbody');
 
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${i+1}</td>
-      <td>${d.tanggal||""}</td>
-      <td>${d.nama_trip_customer||""}</td>
-      <td>${d.kota_asal||""}</td>
-      <td>${d.tujuan_bongkar||""}</td>
-      <td>${d.nopol||""}</td>
-      <td>${d.jarak||0}</td>
-      <td>${d.tonase||0}</td>
-      <td>${Number(d.solar||0).toLocaleString('id-ID')}</td>
-      <td>${Number(d.tol||0).toLocaleString('id-ID')}</td>
-      <td>${Number(d.upah1||0).toLocaleString('id-ID')}</td>
-      <td>${Number(d.upah2||0).toLocaleString('id-ID')}</td>
-      <td>${Number(d.asam||0).toLocaleString('id-ID')}</td>
-      <td>${Number(d.total||0).toLocaleString('id-ID')}</td>
+tbody.innerHTML="";
+
+let grand=0;
+
+data.forEach((d,i)=>{
+
+grand+=Number(d.total||0);
+
+const tr=document.createElement('tr');
+
+tr.innerHTML=`
+
+<td>${i+1}</td>
+<td>${d.tanggal||""}</td>
+<td>${d.nama_trip_customer||""}</td>
+<td>${d.kota_asal||""}</td>
+<td>${d.tujuan_bongkar||""}</td>
+<td>${d.nopol||""}</td>
+<td>${d.jarak||0}</td>
+<td>${d.tonase||0}</td>
+<td>${Number(d.solar||0).toLocaleString('id-ID')}</td>
+<td>${Number(d.tol||0).toLocaleString('id-ID')}</td>
+<td>${Number(d.upah1||0).toLocaleString('id-ID')}</td>
+<td>${Number(d.upah2||0).toLocaleString('id-ID')}</td>
+<td>${Number(d.asam||0).toLocaleString('id-ID')}</td>
+<td>${Number(d.total||0).toLocaleString('id-ID')}</td>
+
 <td>
+
+<button onclick="editData(${d.id})" style="background:orange">Edit</button>
+
 <button onclick="hapusData(${d.id})" style="background:red">Hapus</button>
+
 </td>
-    `;
-    tbody.appendChild(tr);
-  });
 
-  document.getElementById('grandTotal').innerText = "Grand Total : " + grand.toLocaleString('id-ID');
-}
+`;
 
-const form = document.getElementById('formData');
+tbody.appendChild(tr);
 
-form.addEventListener('submit', async (e)=>{
-  e.preventDefault();
-
-  hitungTotal();
-
-  const payload = {
-    tanggal: document.getElementById('tanggal').value,
-    nama_trip_customer: document.getElementById('nama_trip_customer').value,
-    kota_asal: document.getElementById('kota_asal').value,
-    tujuan_bongkar: document.getElementById('tujuan_bongkar').value,
-    nopol: document.getElementById('nopol').value,
-    jarak: Number(document.getElementById('jarak').value),
-    tonase: Number(document.getElementById('tonase').value),
-    solar: Number(solarEl.value||0),
-    tol: Number(tolEl.value||0),
-    upah1: Number(upah1El.value||0),
-    upah2: Number(upah2El.value||0),
-    asam: Number(asamEl.value||0),
-    total: Number(totalEl.value||0)
-  };
-
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`,{
-    method:"POST",
-    headers,
-    body: JSON.stringify(payload)
-  });
-
-  if(!res.ok){
-    const t = await res.text();
-    alert("Gagal simpan: " + t);
-    return;
-  }
-
-  form.reset();
-  totalEl.value = "";
-  loadData();
 });
 
+document.getElementById('grandTotal').innerText="Grand Total : "+grand.toLocaleString('id-ID');
+
+}
+
+function editData(id){
+
+const d=dataGlobal.find(x=>x.id===id);
+
+document.getElementById('tanggal').value=d.tanggal;
+document.getElementById('nama_trip_customer').value=d.nama_trip_customer;
+document.getElementById('kota_asal').value=d.kota_asal;
+document.getElementById('tujuan_bongkar').value=d.tujuan_bongkar;
+document.getElementById('nopol').value=d.nopol;
+document.getElementById('jarak').value=d.jarak;
+document.getElementById('tonase').value=d.tonase;
+
+solarEl.value=d.solar;
+tolEl.value=d.tol;
+upah1El.value=d.upah1;
+upah2El.value=d.upah2;
+asamEl.value=d.asam;
+
+totalEl.value=d.total;
+
+editId=id;
+
+window.scrollTo({top:0,behavior:"smooth"});
+
+}
+
+const form=document.getElementById('formData');
+
+form.addEventListener('submit',async(e)=>{
+
+e.preventDefault();
+
+hitungTotal();
+
+const payload={
+
+tanggal:document.getElementById('tanggal').value,
+nama_trip_customer:document.getElementById('nama_trip_customer').value,
+kota_asal:document.getElementById('kota_asal').value,
+tujuan_bongkar:document.getElementById('tujuan_bongkar').value,
+nopol:document.getElementById('nopol').value,
+jarak:Number(document.getElementById('jarak').value),
+tonase:Number(document.getElementById('tonase').value),
+solar:Number(solarEl.value||0),
+tol:Number(tolEl.value||0),
+upah1:Number(upah1El.value||0),
+upah2:Number(upah2El.value||0),
+asam:Number(asamEl.value||0),
+total:Number(totalEl.value||0)
+
+};
+
+const url=editId
+?`${SUPABASE_URL}/rest/v1/${TABLE}?id=eq.${editId}`
+:`${SUPABASE_URL}/rest/v1/${TABLE}`;
+
+const method=editId?"PATCH":"POST";
+
+const res=await fetch(url,{method,headers,body:JSON.stringify(payload)});
+
+if(!res.ok){
+
+alert("Gagal simpan");
+
+return;
+
+}
+
+editId=null;
+
+form.reset();
+
+totalEl.value="";
+
 loadData();
-  async function hapusData(id){
+
+});
+
+async function hapusData(id){
 
 if(!confirm("Yakin ingin menghapus data ini?")) return;
 
-const res = await fetch(
-`${SUPABASE_URL}/rest/v1/${TABLE}?id=eq.${id}`,
-{
+const res=await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?id=eq.${id}`,{
+
 method:"DELETE",
+
 headers:{
+
 apikey:SUPABASE_KEY,
+
 Authorization:"Bearer "+SUPABASE_KEY
+
 }
-}
-);
+
+});
 
 if(res.ok){
+
 alert("Data berhasil dihapus");
+
 loadData();
-}else{
-alert("Gagal menghapus data");
+
 }
 
 }
+
+loadData();
+
 </script>
 
 </body>
