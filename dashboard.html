@@ -1,154 +1,129 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-<title>Dashboard Uang Jalan</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8">
+<title>Dashboard Uang Jalan Driver</title>
 
 <style>
-
 body{
-font-family: Arial;
-background:#f4f6f9;
-padding:20px;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f4f6f9;
+  padding:20px
 }
 
-h1{
-text-align:center;
+h2{margin-bottom:10px}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  background:#fff;
+  box-shadow:0 2px 6px rgba(0,0,0,.1)
 }
 
-.container{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:15px;
-margin-bottom:30px;
+th,td{
+  padding:8px;
+  border-bottom:1px solid #ddd;
+  text-align:center;
+  font-size:13px
 }
 
-.card{
-background:white;
-padding:20px;
-border-radius:10px;
-box-shadow:0 2px 5px rgba(0,0,0,0.1);
-text-align:center;
-}
+th{background:#f0f0f0}
 
-.card h2{
-margin:0;
-font-size:18px;
-color:#555;
+.totalbox{
+  margin-top:15px;
+  font-weight:bold;
+  font-size:16px
 }
-
-.card p{
-font-size:22px;
-font-weight:bold;
-margin-top:10px;
-}
-
-.chart-box{
-background:white;
-padding:20px;
-border-radius:10px;
-box-shadow:0 2px 5px rgba(0,0,0,0.1);
-}
-
 </style>
-</head>
 
+</head>
 <body>
 
-<h1>Dashboard Uang Jalan Driver</h1>
+<h2>Dashboard Uang Jalan Driver</h2>
 
-<div class="container">
+<table>
+<thead>
+<tr>
+<th>No</th>
+<th>Tanggal</th>
+<th>Trip</th>
+<th>Asal</th>
+<th>Tujuan</th>
+<th>Nopol</th>
+<th>Solar</th>
+<th>Tol</th>
+<th>D1</th>
+<th>D2</th>
+<th>Asam</th>
+<th>Total</th>
+</tr>
+</thead>
 
-<div class="card">
-<h2>Total Trip</h2>
-<p id="trip">0</p>
-</div>
+<tbody id="tbody"></tbody>
 
-<div class="card">
-<h2>Total Solar</h2>
-<p id="solar">0</p>
-</div>
+</table>
 
-<div class="card">
-<h2>Total Tol</h2>
-<p id="tol">0</p>
-</div>
-
-<div class="card">
-<h2>Total Pengeluaran</h2>
-<p id="total">0</p>
-</div>
-
-</div>
-
-<div class="chart-box">
-<canvas id="chart"></canvas>
-</div>
+<div class="totalbox" id="grandTotal">Grand Total : 0</div>
 
 <script>
 
-const supabase = supabase.createClient(
-"https://jlhfzgxddlmyfdlwjlzs.supabase.co",
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsaGZ6Z3hkZGxteWZkbHdqbHpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNTQ1NjYsImV4cCI6MjA4NzczMDU2Nn0.xHwlc4VaG5bSCE9TRXakaG1_Cj0oEv8nSijdbQuL-rY"
-)
+const SUPABASE_URL = "https://jlhfzgxddlmyfdlwjlzs.supabase.co";
+const SUPABASE_KEY = "sb_publishable_zc8JApZLnG1D1M2xpDP7tA_H7RnxZ_T";
+const TABLE = "uang_jalan_driver";
 
-async function loadDashboard(){
+async function loadData(){
 
-const {data,error} = await supabase
-.from("uang_jalan_driver")
-.select("*")
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/${TABLE}?select=*&order=id.desc`,
+    {
+      headers:{
+        "apikey":SUPABASE_KEY,
+        "Authorization":"Bearer "+SUPABASE_KEY
+      }
+    }
+  );
 
-console.log(data)
-console.log(error)
+  const data = await res.json();
 
-if(error){
-alert(error.message)
-return
+  render(data);
 }
 
-let trip = data.length
-let solar = 0
-let tol = 0
-let total = 0
+function render(data){
 
-let tanggal = []
-let totalHarian = []
+  const tbody = document.getElementById("tbody");
+  tbody.innerHTML="";
 
-data.forEach(r=>{
+  let grandTotal = 0;
 
-solar += Number(r.solar || 0)
-tol += Number(r.tol || 0)
-total += Number(r.total || 0)
+  data.forEach((d,i)=>{
 
-tanggal.push(r.tanggal)
-totalHarian.push(r.total)
+    grandTotal += Number(d.total||0);
 
-})
+    const tr = document.createElement("tr");
 
-document.getElementById("trip").innerText = trip
-document.getElementById("solar").innerText = solar.toLocaleString()
-document.getElementById("tol").innerText = tol.toLocaleString()
-document.getElementById("total").innerText = total.toLocaleString()
+    tr.innerHTML = `
+      <td>${i+1}</td>
+      <td>${d.tanggal||""}</td>
+      <td>${d.nama_trip_customer||""}</td>
+      <td>${d.kota_asal||""}</td>
+      <td>${d.tujuan_bongkar||""}</td>
+      <td>${d.nopol||""}</td>
+      <td>${Number(d.solar||0).toLocaleString('id-ID')}</td>
+      <td>${Number(d.tol||0).toLocaleString('id-ID')}</td>
+      <td>${Number(d.upah1||0).toLocaleString('id-ID')}</td>
+      <td>${Number(d.upah2||0).toLocaleString('id-ID')}</td>
+      <td>${Number(d.asam||0).toLocaleString('id-ID')}</td>
+      <td>${Number(d.total||0).toLocaleString('id-ID')}</td>
+    `;
 
-const ctx = document.getElementById("chart")
+    tbody.appendChild(tr);
+  });
 
-new Chart(ctx,{
-type:"bar",
-data:{
-labels:tanggal,
-datasets:[{
-label:"Pengeluaran",
-data:totalHarian
-}]
-}
-})
-
+  document.getElementById("grandTotal").innerText =
+    "Grand Total : "+grandTotal.toLocaleString('id-ID');
 }
 
-loadDashboard()
+loadData();
 
 </script>
 
