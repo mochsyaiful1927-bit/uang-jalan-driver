@@ -166,6 +166,9 @@ function render(data){
       <td>${Number(d.upah2||0).toLocaleString('id-ID')}</td>
       <td>${Number(d.asam||0).toLocaleString('id-ID')}</td>
       <td>${Number(d.total||0).toLocaleString('id-ID')}</td>
+<td>
+<button onclick="hapusData(${d.id})" style="background:red">Hapus</button>
+</td>
     `;
     tbody.appendChild(tr);
   });
@@ -214,6 +217,29 @@ form.addEventListener('submit', async (e)=>{
 });
 
 loadData();
+  async function hapusData(id){
+
+if(!confirm("Yakin ingin menghapus data ini?")) return;
+
+const res = await fetch(
+`${SUPABASE_URL}/rest/v1/${TABLE}?id=eq.${id}`,
+{
+method:"DELETE",
+headers:{
+apikey:SUPABASE_KEY,
+Authorization:"Bearer "+SUPABASE_KEY
+}
+}
+);
+
+if(res.ok){
+alert("Data berhasil dihapus");
+loadData();
+}else{
+alert("Gagal menghapus data");
+}
+
+}
 </script>
 
 </body>
