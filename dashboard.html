@@ -4,74 +4,62 @@
 <meta charset="UTF-8">
 <title>Dashboard Uang Jalan Driver</title>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <style>
 
 body{
 font-family:Arial,Helvetica,sans-serif;
 background:#f4f6f9;
-padding:20px;
+padding:25px;
 }
 
-h1{
-margin-bottom:20px;
+h2{
+margin-bottom:15px;
 }
 
-.cards{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-gap:15px;
-margin-bottom:20px;
+.topbar{
+display:flex;
+justify-content:space-between;
+margin-bottom:15px;
 }
 
-.card{
+input{
+padding:8px;
+border:1px solid #ccc;
+border-radius:6px;
+}
+
+.tablebox{
 background:white;
-padding:20px;
 border-radius:10px;
 box-shadow:0 3px 8px rgba(0,0,0,0.1);
-}
-
-.card h3{
-margin:0;
-font-size:14px;
-color:#777;
-}
-
-.card p{
-font-size:22px;
-font-weight:bold;
-margin-top:5px;
-}
-
-.chartbox{
-background:white;
-padding:20px;
-border-radius:10px;
-box-shadow:0 3px 8px rgba(0,0,0,0.1);
-margin-bottom:20px;
+overflow:auto;
 }
 
 table{
 width:100%;
 border-collapse:collapse;
-background:white;
-box-shadow:0 3px 8px rgba(0,0,0,0.1);
+font-size:13px;
 }
 
 th,td{
 padding:8px;
-border-bottom:1px solid #ddd;
-font-size:13px;
+border-bottom:1px solid #eee;
 text-align:center;
 }
 
 th{
-background:#f0f0f0;
+background:#f1f5f9;
+font-weight:bold;
 }
 
-.filter{
-margin-bottom:15px;
+tr:hover{
+background:#f9fafb;
+}
+
+.totalbox{
+margin-top:12px;
+font-size:16px;
+font-weight:bold;
 }
 
 </style>
@@ -79,61 +67,44 @@ margin-bottom:15px;
 
 <body>
 
-<h1>Dashboard Uang Jalan Driver</h1>
+<h2>Dashboard Uang Jalan Driver</h2>
 
-<div class="cards">
-
-<div class="card">
-<h3>Total Trip</h3>
-<p id="trip">0</p>
+<div class="topbar">
+<input type="text" id="search" placeholder="Cari nopol / trip..." onkeyup="searchData()">
 </div>
 
-<div class="card">
-<h3>Total Solar</h3>
-<p id="solar">0</p>
-</div>
-
-<div class="card">
-<h3>Total Tol</h3>
-<p id="tol">0</p>
-</div>
-
-<div class="card">
-<h3>Total Pengeluaran</h3>
-<p id="total">0</p>
-</div>
-
-</div>
-
-<div class="chartbox">
-<canvas id="chart"></canvas>
-</div>
-
-<div class="filter">
-Filter tanggal :
-<input type="date" id="tgl1">
-s/d
-<input type="date" id="tgl2">
-<button onclick="filter()">Filter</button>
-</div>
+<div class="tablebox">
 
 <table>
 
 <thead>
+
 <tr>
 <th>No</th>
 <th>Tanggal</th>
 <th>Trip</th>
+<th>Asal</th>
+<th>Tujuan</th>
 <th>Nopol</th>
+<th>Jarak</th>
+<th>Tonase</th>
 <th>Solar</th>
 <th>Tol</th>
+<th>Driver 1</th>
+<th>Driver 2</th>
+<th>Asam</th>
 <th>Total</th>
 </tr>
+
 </thead>
 
 <tbody id="tbody"></tbody>
 
 </table>
+
+</div>
+
+<div class="totalbox" id="grandTotal">Grand Total : 0</div>
 
 <script>
 
@@ -141,7 +112,7 @@ const SUPABASE_URL="https://jlhfzgxddlmyfdlwjlzs.supabase.co";
 const SUPABASE_KEY="sb_publishable_zc8JApZLnG1D1M2xpDP7tA_H7RnxZ_T";
 const TABLE="uang_jalan_driver";
 
-let allData=[];
+let dataGlobal=[];
 
 async function loadData(){
 
@@ -149,15 +120,15 @@ const res=await fetch(
 `${SUPABASE_URL}/rest/v1/${TABLE}?select=*&order=id.desc`,
 {
 headers:{
-"apikey":SUPABASE_KEY,
-"Authorization":"Bearer "+SUPABASE_KEY
+apikey:SUPABASE_KEY,
+Authorization:"Bearer "+SUPABASE_KEY
 }
 }
 );
 
-allData=await res.json();
+dataGlobal=await res.json();
 
-render(allData);
+render(dataGlobal);
 
 }
 
@@ -166,67 +137,52 @@ function render(data){
 const tbody=document.getElementById("tbody");
 tbody.innerHTML="";
 
-let totalSolar=0;
-let totalTol=0;
-let totalAll=0;
+let grand=0;
 
 data.forEach((d,i)=>{
 
-totalSolar+=Number(d.solar||0);
-totalTol+=Number(d.tol||0);
-totalAll+=Number(d.total||0);
+grand+=Number(d.total||0);
 
 const tr=document.createElement("tr");
 
 tr.innerHTML=`
+
 <td>${i+1}</td>
 <td>${d.tanggal||""}</td>
 <td>${d.nama_trip_customer||""}</td>
+<td>${d.kota_asal||""}</td>
+<td>${d.tujuan_bongkar||""}</td>
 <td>${d.nopol||""}</td>
+<td>${d.jarak||0}</td>
+<td>${d.tonase||0}</td>
 <td>${Number(d.solar||0).toLocaleString('id-ID')}</td>
 <td>${Number(d.tol||0).toLocaleString('id-ID')}</td>
+<td>${Number(d.upah1||0).toLocaleString('id-ID')}</td>
+<td>${Number(d.upah2||0).toLocaleString('id-ID')}</td>
+<td>${Number(d.asam||0).toLocaleString('id-ID')}</td>
 <td>${Number(d.total||0).toLocaleString('id-ID')}</td>
+
 `;
 
 tbody.appendChild(tr);
 
 });
 
-document.getElementById("trip").innerText=data.length;
-document.getElementById("solar").innerText=totalSolar.toLocaleString('id-ID');
-document.getElementById("tol").innerText=totalTol.toLocaleString('id-ID');
-document.getElementById("total").innerText=totalAll.toLocaleString('id-ID');
-
-buatChart(totalSolar,totalTol,totalAll);
+document.getElementById("grandTotal").innerText=
+"Grand Total : "+grand.toLocaleString('id-ID');
 
 }
 
-function buatChart(solar,tol,total){
+function searchData(){
 
-new Chart(document.getElementById("chart"),{
+const keyword=document.getElementById("search").value.toLowerCase();
 
-type:'bar',
+const hasil=dataGlobal.filter(d=>
 
-data:{
-labels:["Solar","Tol","Total"],
-datasets:[{
-label:"Pengeluaran",
-data:[solar,tol,total]
-}]
-}
+(d.nopol||"").toLowerCase().includes(keyword) ||
+(d.nama_trip_customer||"").toLowerCase().includes(keyword)
 
-});
-
-}
-
-function filter(){
-
-const t1=document.getElementById("tgl1").value;
-const t2=document.getElementById("tgl2").value;
-
-const hasil=allData.filter(d=>{
-return d.tanggal>=t1 && d.tanggal<=t2;
-});
+);
 
 render(hasil);
 
