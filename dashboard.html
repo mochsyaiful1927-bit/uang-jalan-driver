@@ -101,6 +101,14 @@ const {data,error} = await supabase
 .from("uang_jalan_driver")
 .select("*")
 
+console.log(data)
+console.log(error)
+
+if(error){
+alert(error.message)
+return
+}
+
 let trip = data.length
 let solar = 0
 let tol = 0
