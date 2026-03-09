@@ -26,10 +26,6 @@ th{background:#f0f0f0}
 <form id="formData">
 <div class="grid">
 
-<label>Tanggal
-<input type="date" id="tanggal" required>
-</label>
-
 <label>Nama Trip / Customer
 <input type="text" id="nama_trip_customer" required>
 </label>
@@ -89,7 +85,6 @@ th{background:#f0f0f0}
 <thead>
 <tr>
 <th>No</th>
-<th>Tanggal</th>
 <th>Trip</th>
 <th>Asal</th>
 <th>Tujuan</th>
@@ -178,7 +173,6 @@ const tr=document.createElement('tr');
 tr.innerHTML=`
 
 <td>${i+1}</td>
-<td>${d.tanggal||""}</td>
 <td>${d.nama_trip_customer||""}</td>
 <td>${d.kota_asal||""}</td>
 <td>${d.tujuan_bongkar||""}</td>
@@ -214,7 +208,6 @@ function editData(id){
 
 const d=dataGlobal.find(x=>x.id===id);
 
-document.getElementById('tanggal').value=d.tanggal;
 document.getElementById('nama_trip_customer').value=d.nama_trip_customer;
 document.getElementById('kota_asal').value=d.kota_asal;
 document.getElementById('tujuan_bongkar').value=d.tujuan_bongkar;
@@ -246,7 +239,6 @@ hitungTotal();
 
 const payload={
 
-tanggal:document.getElementById('tanggal').value,
 nama_trip_customer:document.getElementById('nama_trip_customer').value,
 kota_asal:document.getElementById('kota_asal').value,
 tujuan_bongkar:document.getElementById('tujuan_bongkar').value,
